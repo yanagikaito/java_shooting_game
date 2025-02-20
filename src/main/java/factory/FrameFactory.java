@@ -2,14 +2,13 @@ package factory;
 
 import frame.FrameSize;
 import frame.GameFrame;
-import panel.GamePanel;
+import window.GameWindow;
 
 import javax.swing.*;
 
-
 public class FrameFactory {
 
-    static GamePanel gamePanel = PanelFactory.createPanel();
+    static GameWindow gameWindow = new GameWindow();
 
     public static GameFrame createFrame(FrameSize size) {
         return () -> {
@@ -18,7 +17,7 @@ public class FrameFactory {
             frame.setSize(size.width(), size.height());
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setTitle("Shooting");
-            frame.add(gamePanel.createPanel());
+            frame.add(gameWindow);
 
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
