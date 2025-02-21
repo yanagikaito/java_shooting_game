@@ -3,6 +3,7 @@ package window;
 import factory.FrameFactory;
 import frame.FrameApp;
 import frame.GameFrame;
+import key.KeyHandler;
 
 import javax.swing.*;
 
@@ -12,13 +13,17 @@ import static frame.FrameApp.baseDisplay;
 
 public class GameWindow extends JPanel implements Window, Runnable {
 
-    private final GameFrame gameFrame;
+    private GameFrame gameFrame = FrameFactory.createFrame(baseDisplay());
     private Thread gameThread;
+    private KeyHandler keyHandler = new KeyHandler(this);
+    private int playerX = 100;
+    private int playerY = 100;
+    private int playerSpeed = 4;
 
     public GameWindow() {
-        gameFrame = FrameFactory.createFrame(baseDisplay());
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
+        this.addKeyListener(keyHandler);
         this.setFocusable(true);
     }
 
@@ -72,16 +77,33 @@ public class GameWindow extends JPanel implements Window, Runnable {
     }
 
     public void update() {
-
+        if (keyHandler.getUpPressed() == true) {
+            playerY -= playerSpeed;
+            System.out.println("Up Pressed");
+        }
+        if (keyHandler.getDownPressed() == true) {
+            playerY += playerSpeed;
+            System.out.println("Down Pressed");
+        }
+        if (keyHandler.getLeftPressed() == true) {
+            playerX -= playerSpeed;
+            System.out.println("Left Pressed");
+        }
+        if (keyHandler.getRightPressed() == true) {
+            playerX += playerSpeed;
+            System.out.println("Right Pressed");
+        }
     }
 
     @Override
-    public void paintComponent(final Graphics g) {
+    public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
+
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.BLUE);
-        g2.fillRect(100, 100, FrameApp.createSize() / 2, FrameApp.createSize() / 2);
-        g2.dispose();
+        g2.fillRect(playerX + 12, playerY - 10, FrameApp.createSize() / 2, FrameApp.createSize() / 2);
+        g2.fillRect(playerX + 12, playerY, FrameApp.createSize() / 2, FrameApp.createSize() / 2);
+        g2.fillRect(playerX, playerY, (FrameApp.createSize() / 2) * 2, FrameApp.createSize() / 2);
     }
 }
