@@ -25,13 +25,13 @@ public class GameWindow extends JPanel implements Window, Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
+        this.startThread();
     }
 
     @Override
     public void frame() {
 
         gameFrame.createFrame();
-        startThread();
     }
 
     public void startThread() {
@@ -79,19 +79,15 @@ public class GameWindow extends JPanel implements Window, Runnable {
     public void update() {
         if (keyHandler.getUpPressed() == true) {
             playerY -= playerSpeed;
-            System.out.println("Up Pressed");
         }
         if (keyHandler.getDownPressed() == true) {
             playerY += playerSpeed;
-            System.out.println("Down Pressed");
         }
         if (keyHandler.getLeftPressed() == true) {
             playerX -= playerSpeed;
-            System.out.println("Left Pressed");
         }
         if (keyHandler.getRightPressed() == true) {
             playerX += playerSpeed;
-            System.out.println("Right Pressed");
         }
     }
 
