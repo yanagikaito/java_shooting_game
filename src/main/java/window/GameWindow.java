@@ -8,8 +8,11 @@ import game.Enemy;
 import game.EnumShootingScreen;
 import key.KeyHandler;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -26,8 +29,9 @@ public class GameWindow extends JPanel implements Window, Runnable {
     private ArrayList<Bullet> bulletsEnemy = new ArrayList<>();
     private ArrayList<Enemy> enemies = new ArrayList<>();
     private Random random = new Random();
-    private int playerX = 100;
-    private int playerY = 100;
+    private BufferedImage image;
+    private int playerX = 250;
+    private int playerY = 250;
     private int playerSpeed = 4;
     private int bulletInterval = 0;
     private int score = 0;
@@ -36,11 +40,12 @@ public class GameWindow extends JPanel implements Window, Runnable {
     long levelTimer = 0;
 
     public GameWindow() {
-        this.setBackground(Color.BLACK);
+        this.setBackground(Color.LIGHT_GRAY);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
         this.startThread();
+        this.loadPlayerImage();
     }
 
     @Override
@@ -92,7 +97,19 @@ public class GameWindow extends JPanel implements Window, Runnable {
         enemies.add(new Enemy(enemyX, enemyY, enemySpeed));
     }
 
+    public void loadPlayerImage() {
+
+        try {
+
+            image = ImageIO.read(getClass().getClassLoader().getResourceAsStream("プレイヤー.png"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void update() {
+
         if (keyHandler.getUpPressed()) {
             playerY -= playerSpeed;
         }
@@ -164,7 +181,7 @@ public class GameWindow extends JPanel implements Window, Runnable {
         switch (screen) {
             case START:
 
-                g2.setColor(Color.WHITE);
+                g2.setColor(Color.BLUE);
                 Font font = new Font("SansSerif", Font.PLAIN, 50);
                 g2.setFont(font);
                 FontMetrics metrics = g2.getFontMetrics(font);
@@ -172,14 +189,13 @@ public class GameWindow extends JPanel implements Window, Runnable {
 
             case GAME:
 
-                g2.setColor(Color.BLUE);
-                g2.fillRect(playerX + 12, playerY - 10, FrameApp.createSize() / 2, FrameApp.createSize() / 2);
-                g2.fillRect(playerX + 12, playerY, FrameApp.createSize() / 2, FrameApp.createSize() / 2);
-                g2.fillRect(playerX, playerY, (FrameApp.createSize() / 2) * 2, FrameApp.createSize() / 2);
+                g2.drawImage(image, playerX, playerY,
+                        FrameApp.createSize() * 2, FrameApp.createSize() * 2, null);
 
                 // プレイヤーの弾丸の描画
                 for (Bullet bullet : bulletsPlayer) {
-                    g2.fillRect(bullet.getX(), bullet.getY(), FrameApp.createSize() / 4, FrameApp.createSize() / 4);
+                    g2.fillRect(bullet.getX() + 15, bullet.getY() + 15,
+                            FrameApp.createSize() / 4, FrameApp.createSize() / 4);
                 }
 
                 g2.setColor(Color.RED);
