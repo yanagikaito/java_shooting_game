@@ -131,6 +131,7 @@ public class GameWindow extends JPanel implements Window, Runnable {
             playerY = 430;
             score = 0;
             level = 0;
+            hitCount = 0;
         }
 
         // スペースキーが押されたときに弾丸を生成
@@ -247,6 +248,7 @@ public class GameWindow extends JPanel implements Window, Runnable {
                 }
                 if (random.nextInt(level < FrameApp.createSize() ? 68 - level : FrameApp.createSize()) == 1)
                     enemies.add(new Enemy(random.nextInt(768), 0, 0));
+
                 for (int i = 0; i < bulletsEnemy.size(); i++) {
                     Bullet bullet = bulletsEnemy.get(i);
                     g2.fillRect(bullet.getX(), bullet.getY(), FrameApp.createSize() / 4, FrameApp.createSize() / 4);
@@ -262,7 +264,7 @@ public class GameWindow extends JPanel implements Window, Runnable {
                             bullet.getY() >= playerY && bullet.getY() <= playerY + FrameApp.createSize() / 2) {
                         hitCount++;
                         score += hitCount;
-                        System.out.println(hitCount);
+                        System.out.println("hitCount: " + hitCount);
                         if (hitCount >= 1000) {
                             System.out.println(hitCount);
                             screen = EnumShootingScreen.GAME_OVER;
@@ -272,6 +274,7 @@ public class GameWindow extends JPanel implements Window, Runnable {
                         System.out.println(level);
                     }
                 }
+
                 g2.setColor(Color.WHITE);
                 font = new Font("SanSerif", Font.PLAIN, 20);
                 metrics = g2.getFontMetrics(font);
