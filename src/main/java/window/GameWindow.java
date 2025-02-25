@@ -30,8 +30,8 @@ public class GameWindow extends JPanel implements Window, Runnable {
     private ArrayList<Enemy> enemies = new ArrayList<>();
     private Random random = new Random();
     private BufferedImage image;
-    private int playerX = 250;
-    private int playerY = 250;
+    private int playerX = 235;
+    private int playerY = 435;
     private int playerSpeed = 4;
     private int bulletInterval = 0;
     private int score = 0;
@@ -122,13 +122,24 @@ public class GameWindow extends JPanel implements Window, Runnable {
         if (keyHandler.getRightPressed()) {
             playerX += playerSpeed;
         }
+        if (keyHandler.getEnterPressed()) {
+            screen = EnumShootingScreen.GAME;
+            bulletsPlayer = new ArrayList<>();
+            bulletsEnemy = new ArrayList<>();
+            enemies = new ArrayList<>();
+            playerX = 235;
+            playerY = 430;
+            score = 0;
+            level = 0;
+        }
 
         // スペースキーが押されたときに弾丸を生成
         if (keyHandler.getSpacePressed() && bulletInterval == 0) {
             double direction = Math.random() * 360;
             bulletsPlayer.add(new Bullet(playerX + 12, playerY, (int) direction));
+
             // 連射間隔の設定
-            bulletInterval = 8;
+            bulletInterval = 2;
         }
         if (bulletInterval > 0) bulletInterval--;
 
@@ -155,15 +166,16 @@ public class GameWindow extends JPanel implements Window, Runnable {
             int speed = 10;
             bullet.setX(bullet.getX() + (int) (Math.cos(Math.toRadians(bullet.getDirection())) * speed));
             bullet.setY(bullet.getY() - (int) (Math.sin(Math.toRadians(bullet.getDirection())) * speed));
-            if (bullet.getY() < 0 || bullet.getX() < 0 || bullet.getX() > 768 || bullet.getY() > 576) {
+            if (bullet.getY() < 0 || bullet.getX() < 0
+                    || bullet.getX() > 768 || bullet.getY() > 576) {
                 bulletsPlayer.remove(i);
                 i--;
             }
 
             for (int j = 0; j < enemies.size(); j++) {
                 Enemy enemy = enemies.get(j);
-                if (bullet.getX() >= enemy.getX() && bullet.getX() <= enemy.getX() + 30 &&
-                        bullet.getY() >= enemy.getY() && bullet.getY() <= enemy.getY() + 20) {
+                if (bullet.getX() >= enemy.getX() && bullet.getX() <= enemy.getX() + FrameApp.createSize() &&
+                        bullet.getY() >= enemy.getY() && bullet.getY() <= enemy.getY() + FrameApp.createSize()) {
                     enemies.remove(j);
                     score += 10;
                 }
@@ -185,13 +197,18 @@ public class GameWindow extends JPanel implements Window, Runnable {
                 Font font = new Font("SansSerif", Font.PLAIN, 50);
                 g2.setFont(font);
                 FontMetrics metrics = g2.getFontMetrics(font);
-
+                g2.drawString("Shooting", 250 - (metrics.stringWidth("Shooting") / 2), 100);
+                font = new Font("SansSerif", Font.PLAIN, 20);
+                g2.setFont(font);
+                metrics = g2.getFontMetrics(font);
+                g2.drawString("Press ENTER to Start", 250 - (metrics.stringWidth("Press ENTER to Start") / 2), 160);
 
             case GAME:
 
                 g2.drawImage(image, playerX, playerY,
                         FrameApp.createSize() * 2, FrameApp.createSize() * 2, null);
 
+                g2.setColor(Color.BLUE);
                 // プレイヤーの弾丸の描画
                 for (Bullet bullet : bulletsPlayer) {
                     g2.fillRect(bullet.getX() + 15, bullet.getY() + 15,
@@ -202,48 +219,66 @@ public class GameWindow extends JPanel implements Window, Runnable {
 
                 for (int i = 0; i < enemies.size(); i++) {
                     Enemy enemy = enemies.get(i);
+
                     g2.fillRect(enemy.getX(), enemy.getY(), (FrameApp.createSize() / 2) * 2, FrameApp.createSize() / 2);
                     g2.fillRect(enemy.getX() + (FrameApp.createSize() / 2) - 12, enemy.getY() + 10,
                             FrameApp.createSize() / 2, FrameApp.createSize() / 2);
-                    double direction = Math.random() * 360;
-                    bulletsEnemy.add(new Bullet(enemy.getX() + 12, enemy.getY(), (int) direction));
+
+                    double direction = Math.random() * 1440;
+
+                    bulletsEnemy.add(new Bullet(enemy.getX() + 20, enemy.getY() + 10, (int) direction));
                     enemy.setY(enemy.getY() + 3);
                     if (enemy.getY() > 576) {
                         enemies.remove(i);
                         i--;
                     }
-                    if (random.nextInt(level < 50 ? 80 - level : 30) == 1)
-                        bulletsEnemy.add(new Bullet(enemy.getX() + 12, enemy.getY(), random.nextInt(360)));
-                    if ((enemy.getX() >= playerX && enemy.getX() <= playerX + 30 &&
-                            enemy.getY() >= playerY && enemy.getY() <= playerX + 20) ||
-                            (enemy.getX() + 30 >= playerY && enemy.getX() + 30 <= playerX + 30 &&
-                                    enemy.getY() + 20 >= playerY && enemy.getY() + 20 <= playerY + 20)) {
-                        score += (level - 1) * 100;
+                    if (random.nextInt(level < FrameApp.createSize() ? 68 - level : 100) == 1)
+                        bulletsEnemy.add(new Bullet(enemy.getX() + 12, enemy.getY(), random.nextInt(1440)));
+
+                    if ((enemy.getX() >= playerX && enemy.getX() <= playerX + FrameApp.createSize() &&
+                            enemy.getY() >= playerY && enemy.getY() <= playerX + FrameApp.createSize()) ||
+                            (enemy.getX() + FrameApp.createSize() >= playerY && enemy.getX() + FrameApp.createSize()
+                                    <= playerX + FrameApp.createSize() &&
+                                    enemy.getY() + FrameApp.createSize()
+                                            >= playerY && enemy.getY() + FrameApp.createSize()
+                                    <= playerY + FrameApp.createSize())) {
+                        score += (level + 1) * 100;
                     }
                 }
-                if (random.nextInt(level < 10 ? 30 - level : 10) == 1)
+                if (random.nextInt(level < FrameApp.createSize() ? 68 - level : FrameApp.createSize()) == 1)
                     enemies.add(new Enemy(random.nextInt(768), 0, 0));
                 for (int i = 0; i < bulletsEnemy.size(); i++) {
                     Bullet bullet = bulletsEnemy.get(i);
                     g2.fillRect(bullet.getX(), bullet.getY(), FrameApp.createSize() / 4, FrameApp.createSize() / 4);
-                    int speed = 8;
+                    int speed = 5;
                     bullet.setX(bullet.getX() + (int) (Math.cos(Math.toRadians(bullet.getDirection())) * speed));
                     bullet.setY(bullet.getY() - (int) (Math.sin(Math.toRadians(bullet.getDirection())) * speed));
-                    if (bullet.getY() < 0 || bullet.getX() < 0 || bullet.getX() > 768 || bullet.getY() > 576) {
+                    if (bullet.getY() < FrameApp.createSize() ||
+                            bullet.getX() < FrameApp.createSize() || bullet.getX() > 768 || bullet.getY() > 576) {
                         bulletsEnemy.remove(i);
                         i--;
                     }
-                    if (bullet.getX() >= playerX && bullet.getX() <= playerX + 30 &&
-                            bullet.getY() >= playerY && bullet.getY() <= playerY + 20) {
-                        if (hitCount >= 100) {
-                            screen = EnumShootingScreen.GAME_OVER;
-                            score += (level - 1) * 100;
-                        } else {
-                            hitCount++;
+                    if (bullet.getX() >= playerX && bullet.getX() <= playerX + FrameApp.createSize() / 2 &&
+                            bullet.getY() >= playerY && bullet.getY() <= playerY + FrameApp.createSize() / 2) {
+                        hitCount++;
+                        score += hitCount;
+                        System.out.println(hitCount);
+                        if (hitCount >= 1000) {
                             System.out.println(hitCount);
+                            screen = EnumShootingScreen.GAME_OVER;
+                        } else if (score >= 1000) {
+                            level++;
                         }
+                        System.out.println(level);
                     }
                 }
+                g2.setColor(Color.WHITE);
+                font = new Font("SanSerif", Font.PLAIN, 20);
+                metrics = g2.getFontMetrics(font);
+                g2.setFont(font);
+                g2.drawString("SCORE" + score, 470 - metrics.stringWidth("SCORE:" + score), 430);
+                g2.drawString("LEVEL" + level, 470 - metrics.stringWidth("LEVEL:" + level), 450);
+
                 break;
             case GAME_OVER:
                 g2.setColor(Color.WHITE);

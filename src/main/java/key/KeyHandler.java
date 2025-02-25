@@ -43,6 +43,9 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_SPACE) {
             spacePressed = true;
         }
+        if (code == KeyEvent.VK_ENTER) {
+            enterPressed = true;
+        }
     }
 
     @Override
@@ -64,6 +67,9 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_SPACE) {
             spacePressed = false;
         }
+        if (code == KeyEvent.VK_ENTER) {
+            enterPressed = false;
+        }
     }
 
     public boolean getUpPressed() {
@@ -84,5 +90,9 @@ public class KeyHandler implements KeyListener {
 
     public boolean getSpacePressed() {
         return spacePressed;
+    }
+
+    public boolean getEnterPressed() {
+        return enterPressed;
     }
 }
